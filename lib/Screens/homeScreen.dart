@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:musicapp/Screens/filmScreen.dart';
+
 import '../models/movie.dart';
 import '../services/movie_service.dart';
 
@@ -93,7 +95,6 @@ class _MovieSection extends ConsumerWidget {
   }
 }
 
-// Horizontal List Widget
 class _HorizontalList extends StatelessWidget {
   final List<Movie> movies;
   const _HorizontalList({required this.movies});
@@ -105,30 +106,38 @@ class _HorizontalList extends StatelessWidget {
       itemCount: movies.length,
       itemBuilder: (context, index) {
         final movie = movies[index];
-        return Container(
-          width: 150,
-          margin: const EdgeInsets.only(right: 12),
-          child: Column(
-            children: [
-              Expanded(
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: CachedNetworkImage(
-                    imageUrl: 'https://image.tmdb.org/t/p/w500${movie.posterPath}',
-                    fit: BoxFit.cover,
-                    placeholder: (_, __) => Container(color: Colors.grey[800]),
-                    errorWidget: (_, __, ___) => const Icon(Icons.error),
+        return GestureDetector(
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => FilmScreen(movieId: movie.id),
+            ),
+          ),
+          child: Container(
+            width: 150,
+            margin: const EdgeInsets.only(right: 12),
+            child: Column(
+              children: [
+                Expanded(
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: CachedNetworkImage(
+                      imageUrl: 'https://image.tmdb.org/t/p/w500${movie.posterPath}',
+                      fit: BoxFit.cover,
+                      placeholder: (_, __) => Container(color: Colors.grey[800]),
+                      errorWidget: (_, __, ___) => const Icon(Icons.error),
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                movie.title,
-                maxLines: 2,
-                textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 12),
-              ),
-            ],
+                const SizedBox(height: 8),
+                Text(
+                  movie.title,
+                  maxLines: 2,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(fontSize: 12),
+                ),
+              ],
+            ),
           ),
         );
       },
@@ -136,7 +145,6 @@ class _HorizontalList extends StatelessWidget {
   }
 }
 
-// Vertical Grid Widget
 class _MovieGrid extends StatelessWidget {
   final List<Movie> movies;
   const _MovieGrid({required this.movies});
@@ -155,12 +163,20 @@ class _MovieGrid extends StatelessWidget {
       itemCount: movies.length,
       itemBuilder: (context, index) {
         final movie = movies[index];
-        return ClipRRect(
-          borderRadius: BorderRadius.circular(12),
-          child: CachedNetworkImage(
-            imageUrl: 'https://image.tmdb.org/t/p/w500${movie.posterPath}',
-            fit: BoxFit.cover,
-            placeholder: (_, __) => Container(color: Colors.grey[800]),
+        return GestureDetector(
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => FilmScreen(movieId: movie.id),
+            ),
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: CachedNetworkImage(
+              imageUrl: 'https://image.tmdb.org/t/p/w500${movie.posterPath}',
+              fit: BoxFit.cover,
+              placeholder: (_, __) => Container(color: Colors.grey[800]),
+            ),
           ),
         );
       },
@@ -168,7 +184,6 @@ class _MovieGrid extends StatelessWidget {
   }
 }
 
-// Loading Shimmer Effect
 class _LoadingShimmer extends StatelessWidget {
   final bool isHorizontal;
   const _LoadingShimmer({required this.isHorizontal});
