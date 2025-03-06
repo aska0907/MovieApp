@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:musicapp/Screens/authScreen.dart';
 import 'package:musicapp/Screens/homeScreen.dart';
-import 'services/movie_service.dart';
+
+import 'package:musicapp/services/database_helper.dart';
+import 'package:musicapp/services/movie_service.dart';
 
 final authStateProvider = StreamProvider<User?>((ref) {
   return FirebaseAuth.instance.authStateChanges();
@@ -15,7 +16,7 @@ final authStateProvider = StreamProvider<User?>((ref) {
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Debugging Firebase initialization
+  // Initialize Firebase
   print('Initializing Firebase...');
   try {
     await Firebase.initializeApp();
@@ -24,16 +25,17 @@ void main() async {
     print('Error initializing Firebase: $e');
   }
 
-  // Debugging Hive initialization
-  print('Initializing Hive...');
+  // Initialize Database
+  print('Initializing Database...');
   try {
-    await Hive.initFlutter();
-    print('Hive initialized successfully');
+    final dbHelper = DatabaseHelper();
+    await dbHelper.database;
+    print('Database initialized successfully');
   } catch (e) {
-    print('Error initializing Hive: $e');
+    print('Error initializing database: $e');
   }
 
-  // Debugging dotenv initialization
+  // Load environment variables
   print('Loading environment variables...');
   try {
     await dotenv.load(fileName: ".env");
@@ -42,7 +44,6 @@ void main() async {
     print('Error loading .env: $e');
   }
 
-  // Run the app after all initialization is done
   runApp(const ProviderScope(child: MovieApp()));
 }
 
@@ -61,18 +62,9 @@ class MovieApp extends ConsumerWidget {
       ),
       debugShowCheckedModeBanner: false,
       home: authState.when(
-        data: (user) {
-          print('Auth state: ${user != null ? 'Logged in' : 'Logged out'}');
-          return user != null ? const HomeScreen() : const AuthScreen();
-        },
-        loading: () {
-          print('Loading auth state...');
-          return const Scaffold(body: Center(child: CircularProgressIndicator()));
-        },
-        error: (error, _) {
-          print('Auth error: $error');
-          return Center(child: Text('Auth Error: $error'));
-        },
+        data: (user) => user != null ? const HomeScreen() : const AuthScreen(),
+        loading: () => const Scaffold(body: Center(child: CircularProgressIndicator())),
+        error: (error, _) => Center(child: Text('Auth Error: $error')),
       ),
     );
   }

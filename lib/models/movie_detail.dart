@@ -24,6 +24,37 @@ class MovieDetail {
     required this.cast,
   });
 
+  // Convert to Map for SQLite
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'title': title,
+      'overview': overview,
+      'posterPath': posterPath,
+      'backdropPath': backdropPath,
+      'voteAverage': voteAverage,
+      'runtime': runtime,
+      'genres': genres.join(','), // Store as comma-separated string
+      'cast': cast.map((actor) => actor.id).join(','), // Store actor IDs
+    };
+  }
+
+  // Create from Map (database record)
+  factory MovieDetail.fromMap(Map<String, dynamic> map) {
+    return MovieDetail(
+      id: map['id'],
+      title: map['title'] ?? 'No Title',
+      overview: map['overview'] ?? '',
+      posterPath: map['posterPath'] ?? '',
+      backdropPath: map['backdropPath'] ?? '',
+      voteAverage: map['voteAverage'] ?? 0.0,
+      runtime: map['runtime'] ?? 0,
+      genres: (map['genres'] as String).split(','),
+      cast: [], // We'll populate this separately from actors table
+    );
+  }
+
+  // Existing JSON parser
   factory MovieDetail.fromJson(Map<String, dynamic> json) {
     return MovieDetail(
       id: json['id'],

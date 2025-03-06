@@ -33,7 +33,10 @@ class HomeScreen extends ConsumerWidget {
         ],
       ),
       body: RefreshIndicator(
-        onRefresh: () => ref.refresh(popularMoviesProvider.future),
+        onRefresh: () async {
+          ref.refresh(popularMoviesProvider);
+          ref.refresh(nowPlayingProvider);
+        },
         child: ListView(
           children: [
             _MovieSection(
@@ -106,40 +109,7 @@ class _HorizontalList extends StatelessWidget {
       itemCount: movies.length,
       itemBuilder: (context, index) {
         final movie = movies[index];
-        return GestureDetector(
-          onTap: () => Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => FilmScreen(movieId: movie.id),
-            ),
-          ),
-          child: Container(
-            width: 150,
-            margin: const EdgeInsets.only(right: 12),
-            child: Column(
-              children: [
-                Expanded(
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: CachedNetworkImage(
-                      imageUrl: 'https://image.tmdb.org/t/p/w500${movie.posterPath}',
-                      fit: BoxFit.cover,
-                      placeholder: (_, __) => Container(color: Colors.grey[800]),
-                      errorWidget: (_, __, ___) => const Icon(Icons.error),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  movie.title,
-                  maxLines: 2,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(fontSize: 12),
-                ),
-              ],
-            ),
-          ),
-        );
+        return _MovieCard(movie: movie, isHorizontal: true);
       },
     );
   }
@@ -163,23 +133,54 @@ class _MovieGrid extends StatelessWidget {
       itemCount: movies.length,
       itemBuilder: (context, index) {
         final movie = movies[index];
-        return GestureDetector(
-          onTap: () => Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => FilmScreen(movieId: movie.id),
-            ),
-          ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(12),
-            child: CachedNetworkImage(
-              imageUrl: 'https://image.tmdb.org/t/p/w500${movie.posterPath}',
-              fit: BoxFit.cover,
-              placeholder: (_, __) => Container(color: Colors.grey[800]),
-            ),
-          ),
-        );
+        return _MovieCard(movie: movie, isHorizontal: false);
       },
+    );
+  }
+}
+
+class _MovieCard extends StatelessWidget {
+  final Movie movie;
+  final bool isHorizontal;
+  const _MovieCard({required this.movie, required this.isHorizontal});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => FilmScreen(movieId: movie.id),
+        ),
+      ),
+      child: Container(
+        width: isHorizontal ? 150 : null,
+        margin: isHorizontal ? const EdgeInsets.only(right: 12) : null,
+        child: Column(
+          children: [
+            Expanded(
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: CachedNetworkImage(
+                  imageUrl: 'https://image.tmdb.org/t/p/w500${movie.posterPath}',
+                  fit: BoxFit.cover,
+                  placeholder: (_, __) => Container(color: Colors.grey[800]),
+                  errorWidget: (_, __, ___) => const Icon(Icons.error),
+                ),
+              ),
+            ),
+            if (isHorizontal) ...[
+              const SizedBox(height: 8),
+              Text(
+                movie.title,
+                maxLines: 2,
+                textAlign: TextAlign.center,
+                style: const TextStyle(fontSize: 12),
+              ),
+            ],
+          ],
+        ),
+      ),
     );
   }
 }
@@ -197,7 +198,10 @@ class _LoadingShimmer extends StatelessWidget {
             itemBuilder: (_, __) => Container(
               width: 150,
               margin: const EdgeInsets.only(right: 12),
-              color: Colors.grey[800],
+              decoration: BoxDecoration(
+                color: Colors.grey[800],
+                borderRadius: BorderRadius.circular(12),
+              ),
             ),
           )
         : GridView.builder(
@@ -210,7 +214,12 @@ class _LoadingShimmer extends StatelessWidget {
               crossAxisSpacing: 12,
             ),
             itemCount: 4,
-            itemBuilder: (_, __) => Container(color: Colors.grey[800]),
+            itemBuilder: (_, __) => Container(
+              decoration: BoxDecoration(
+                color: Colors.grey[800],
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
           );
   }
 }
