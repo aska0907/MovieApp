@@ -1,16 +1,18 @@
-# musicapp
+Movie App
+This is a Flutter-based movie application that retrieves movie data from the TMDB API. It provides a seamless experience for users to browse, search, and discover movies
+      
+      
+      Technologies Used
+Flutter (Dart) – Cross-platform app development.
+Firebase Authentication – Secure login and user management.
+SQLite – Offline data storage.
+HTTP & Cached Network Image – Fetch and optimize data efficiently.
+Path Provider & File Management – Organize and store movie files.
+Flutter Riverpod – State management for a smooth user experience
 
-A new Flutter project.
 
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+     Installation
+Prerequisites
+Flutter SDK installed (Get Flutter)
+Dart SDK installed
+Android/iOS emulator or physical device
